@@ -25,7 +25,13 @@ export default [
     details: [
       { text: '全新钛金属设计，坚固又轻盈' },
       { text: 'A17 Pro芯片，性能大幅提升' }
-    ]
+    ],
+    deliveryType: 'express',
+    expressCompany: '顺丰速运',
+    trackingNumber: 'SF1234567890',
+    deliveryAddress: '',
+    contactPerson: '',
+    deliveryNote: ''
   },
   {
     id: 2,
@@ -53,7 +59,13 @@ export default [
     details: [
       { text: 'M3 Pro芯片，专业级性能' },
       { text: 'Liquid视网膜XDR显示屏' }
-    ]
+    ],
+    deliveryType: 'express',
+    expressCompany: '京东物流',
+    trackingNumber: 'JD1234567890',
+    deliveryAddress: '',
+    contactPerson: '',
+    deliveryNote: ''
   },
   {
     id: 3,
@@ -79,7 +91,13 @@ export default [
     details: [
       { text: '自适应音频，智能降噪' },
       { text: '个性化空间音频' }
-    ]
+    ],
+    deliveryType: 'express',
+    expressCompany: '中通快递',
+    trackingNumber: 'ZT9876543210',
+    deliveryAddress: '',
+    contactPerson: '',
+    deliveryNote: ''
   },
   {
     id: 4,
@@ -105,7 +123,13 @@ export default [
     details: [
       { text: 'M2芯片，性能强劲' },
       { text: '12.9英寸Liquid视网膜XDR屏' }
-    ]
+    ],
+    deliveryType: 'onsite',
+    expressCompany: '',
+    trackingNumber: '',
+    deliveryAddress: '北京市朝阳区建国路88号苹果旗舰店',
+    contactPerson: '张经理 138-0013-8000',
+    deliveryNote: '到店自提，提前预约'
   },
   {
     id: 5,
@@ -130,7 +154,13 @@ export default [
     details: [
       { text: '49mm钛金属表壳' },
       { text: '双频GPS定位精准' }
-    ]
+    ],
+    deliveryType: 'onsite',
+    expressCompany: '',
+    trackingNumber: '',
+    deliveryAddress: '上海市浦东新区世纪大道1000号Apple Store',
+    contactPerson: '李店员 139-0013-9000',
+    deliveryNote: '门店自提，联系店员'
   },
   {
     id: 6,
@@ -154,7 +184,13 @@ export default [
     ],
     details: [
       { text: '背光按键，稳定有线连接' }
-    ]
+    ],
+    deliveryType: 'express',
+    expressCompany: '圆通速递',
+    trackingNumber: 'YT5678901234',
+    deliveryAddress: '',
+    contactPerson: '',
+    deliveryNote: ''
   },
   {
     id: 7,
@@ -178,7 +214,13 @@ export default [
     ],
     details: [
       { text: '磁吸对齐，快速充电' }
-    ]
+    ],
+    deliveryType: 'express',
+    expressCompany: '韵达快递',
+    trackingNumber: 'YD3456789012',
+    deliveryAddress: '',
+    contactPerson: '',
+    deliveryNote: ''
   },
   {
     id: 8,
@@ -204,7 +246,13 @@ export default [
     details: [
       { text: 'A15仿生芯片' },
       { text: '6.1英寸超视网膜XDR显示屏' }
-    ]
+    ],
+    deliveryType: 'onsite',
+    expressCompany: '',
+    trackingNumber: '',
+    deliveryAddress: '广州市天河区天河路383号太古汇Apple Store',
+    contactPerson: '王店长 137-0013-7000',
+    deliveryNote: '现场交付，门店取货'
   },
   {
     id: 9,
@@ -230,7 +278,13 @@ export default [
     details: [
       { text: '业界领先降噪技术' },
       { text: '30小时超长续航' }
-    ]
+    ],
+    deliveryType: 'express',
+    expressCompany: '极兔速递',
+    trackingNumber: 'JT2345678901',
+    deliveryAddress: '',
+    contactPerson: '',
+    deliveryNote: ''
   },
   {
     id: 10,
@@ -256,7 +310,13 @@ export default [
     details: [
       { text: 'Galaxy AI智能助手' },
       { text: '2亿像素摄像头' }
-    ]
+    ],
+    deliveryType: 'express',
+    expressCompany: '顺丰速运',
+    trackingNumber: 'SF9876543210',
+    deliveryAddress: '',
+    contactPerson: '',
+    deliveryNote: ''
   },
   {
     id: 11,
@@ -282,7 +342,13 @@ export default [
     details: [
       { text: '7英寸OLED屏幕' },
       { text: '有线 LAN 接口' }
-    ]
+    ],
+    deliveryType: 'onsite',
+    expressCompany: '',
+    trackingNumber: '',
+    deliveryAddress: '深圳市南山区科技园任天堂专卖店',
+    contactPerson: '陈店员 136-0013-6000',
+    deliveryNote: '门店交付，需出示订单'
   },
   {
     id: 12,
@@ -308,6 +374,12 @@ export default [
     details: [
       { text: '1.74寸AMOLED高清屏' },
       { text: '14天超长续航' }
-    ]
+    ],
+    deliveryType: 'express',
+    expressCompany: '中通快递',
+    trackingNumber: 'ZT8765432109',
+    deliveryAddress: '',
+    contactPerson: '',
+    deliveryNote: ''
   }
 ]

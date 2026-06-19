@@ -60,7 +60,13 @@ router.post('/', (req, res) => {
     specConfig: req.body.specConfig || '',
     minOrderQty: req.body.minOrderQty || 1,
     specs: req.body.specs || [],
-    details: req.body.details || []
+    details: req.body.details || [],
+    deliveryType: req.body.deliveryType || 'express',
+    expressCompany: req.body.expressCompany || '',
+    trackingNumber: req.body.trackingNumber || '',
+    deliveryAddress: req.body.deliveryAddress || '',
+    contactPerson: req.body.contactPerson || '',
+    deliveryNote: req.body.deliveryNote || ''
   }
 
   products.push(newProduct)

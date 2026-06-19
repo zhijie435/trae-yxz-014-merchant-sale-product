@@ -213,6 +213,117 @@
         </div>
       </div>
 
+      <div class="form-section">
+        <h2 class="section-title">
+          <span class="section-icon">🚚</span>
+          交付设置
+          <span class="section-hint">（选择商品配送方式）</span>
+        </h2>
+
+        <div class="delivery-options">
+          <div class="delivery-option" :class="{ active: formData.deliveryType === 'express' }">
+            <label class="option-card">
+              <input
+                type="radio"
+                v-model="formData.deliveryType"
+                value="express"
+                class="option-radio"
+              />
+              <div class="option-content">
+                <div class="option-icon">📦</div>
+                <div class="option-info">
+                  <div class="option-title">快递交付</div>
+                  <div class="option-desc">通过快递公司配送，需填写快递单号和快递公司</div>
+                </div>
+              </div>
+            </label>
+
+            <div v-if="formData.deliveryType === 'express'" class="option-details">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>快递公司</label>
+                  <select v-model="formData.expressCompany" class="input-field">
+                    <option value="">请选择快递公司</option>
+                    <option value="顺丰速运">顺丰速运</option>
+                    <option value="中通快递">中通快递</option>
+                    <option value="圆通速递">圆通速递</option>
+                    <option value="韵达快递">韵达快递</option>
+                    <option value="申通快递">申通快递</option>
+                    <option value="极兔速递">极兔速递</option>
+                    <option value="京东物流">京东物流</option>
+                    <option value="菜鸟裹裹">菜鸟裹裹</option>
+                    <option value="德邦快递">德邦快递</option>
+                    <option value="其他">其他</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>快递单号</label>
+                  <input
+                    v-model="formData.trackingNumber"
+                    type="text"
+                    placeholder="请输入快递单号"
+                    class="input-field"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="delivery-option" :class="{ active: formData.deliveryType === 'onsite' }">
+            <label class="option-card">
+              <input
+                type="radio"
+                v-model="formData.deliveryType"
+                value="onsite"
+                class="option-radio"
+              />
+              <div class="option-content">
+                <div class="option-icon">🏪</div>
+                <div class="option-info">
+                  <div class="option-title">操作员现场交付</div>
+                  <div class="option-desc">顾客到店自提或操作员上门交付</div>
+                </div>
+              </div>
+            </label>
+
+            <div v-if="formData.deliveryType === 'onsite'" class="option-details">
+              <div class="form-grid">
+                <div class="form-group full-width">
+                  <label>交付地址</label>
+                  <input
+                    v-model="formData.deliveryAddress"
+                    type="text"
+                    placeholder="请输入交付地址或门店地址"
+                    class="input-field"
+                  />
+                </div>
+
+                <div class="form-group full-width">
+                  <label>联系人信息</label>
+                  <input
+                    v-model="formData.contactPerson"
+                    type="text"
+                    placeholder="请输入联系人姓名和电话"
+                    class="input-field"
+                  />
+                </div>
+
+                <div class="form-group full-width">
+                  <label>备注说明</label>
+                  <textarea
+                    v-model="formData.deliveryNote"
+                    placeholder="其他交付说明..."
+                    class="input-field textarea"
+                    rows="3"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="form-section specs-details-section">
         <div class="specs-column">
           <h2 class="section-title">
@@ -361,6 +472,12 @@ const formData = reactive({
     url: '',
     file: null
   },
+  deliveryType: 'express',
+  expressCompany: '',
+  trackingNumber: '',
+  deliveryAddress: '',
+  contactPerson: '',
+  deliveryNote: '',
   specs: [
     { label: '', value: '' }
   ],
@@ -502,6 +619,12 @@ const handleSave = () => {
     soldQty: formData.soldQty || 0,
     images: formData.images.filter(img => img.url).map(img => img.url),
     video: formData.video.url,
+    deliveryType: formData.deliveryType,
+    expressCompany: formData.deliveryType === 'express' ? formData.expressCompany : '',
+    trackingNumber: formData.deliveryType === 'express' ? formData.trackingNumber : '',
+    deliveryAddress: formData.deliveryType === 'onsite' ? formData.deliveryAddress : '',
+    contactPerson: formData.deliveryType === 'onsite' ? formData.contactPerson : '',
+    deliveryNote: formData.deliveryType === 'onsite' ? formData.deliveryNote : '',
     specs: formData.specs.filter(spec => spec.label.trim() && spec.value.trim()),
     details: formData.details.filter(detail => detail.text.trim())
   }
@@ -529,6 +652,12 @@ onMounted(() => {
         url: props.editProduct.video || '',
         file: null
       },
+      deliveryType: props.editProduct.deliveryType || 'express',
+      expressCompany: props.editProduct.expressCompany || '',
+      trackingNumber: props.editProduct.trackingNumber || '',
+      deliveryAddress: props.editProduct.deliveryAddress || '',
+      contactPerson: props.editProduct.contactPerson || '',
+      deliveryNote: props.editProduct.deliveryNote || '',
       specs: props.editProduct.specs?.length > 0 
         ? props.editProduct.specs.map(spec => ({ ...spec })) 
         : [{ label: '', value: '' }],
@@ -992,6 +1121,81 @@ onMounted(() => {
   height: 36px;
 }
 
+.delivery-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.delivery-option {
+  background: #fafafa;
+  border: 2px solid #e8e8e8;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s;
+}
+
+.delivery-option.active {
+  border-color: #667eea;
+  background: #f0f4ff;
+}
+
+.option-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  cursor: pointer;
+}
+
+.option-radio {
+  display: none;
+}
+
+.option-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1;
+}
+
+.option-icon {
+  font-size: 36px;
+  line-height: 1;
+}
+
+.option-info {
+  flex: 1;
+}
+
+.option-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 6px;
+}
+
+.option-desc {
+  font-size: 13px;
+  color: #8c8c8c;
+  line-height: 1.5;
+}
+
+.option-details {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e8e8e8;
+}
+
+.option-details .form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.option-details .form-group.full-width {
+  grid-column: 1 / -1;
+}
+
 .video-preview {
   position: relative;
   border-radius: 12px;
@@ -1141,6 +1345,14 @@ onMounted(() => {
   .module-remove-btn {
     width: 100%;
     height: 40px;
+  }
+
+  .delivery-options {
+    grid-template-columns: 1fr;
+  }
+
+  .option-details .form-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>
