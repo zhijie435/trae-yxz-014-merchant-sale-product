@@ -104,18 +104,31 @@ router.post('/:id/payment-success', (req, res) => {
   const product = products.find(p => p.id === parseInt(req.params.id))
 
   if (!product) {
+    console.log(`[付款处理] 商品ID ${req.params.id} 不存在`)
     return res.status(404).json({ error: '商品不存在' })
   }
+
+  const originalStock = product.stock || 0
+  const originalSoldQty = product.soldQty || 0
 
   product.soldQty = (product.soldQty || 0) + 1
 
   if (product.stock > 0) {
     product.stock = product.stock - 1
+    console.log(`[付款成功] ${product.name} (ID: ${product.id}) - 库存: ${originalStock} → ${product.stock}, 已售: ${originalSoldQty} → ${product.soldQty}`)
+  } else {
+    console.log(`[警告] ${product.name} (ID: ${product.id}) 库存不足，当前库存: ${originalStock}`)
+    return res.json({
+      success: false,
+      message: '库存不足，无法完成购买',
+      stock: originalStock,
+      soldQty: product.soldQty
+    })
   }
 
   res.json({
     success: true,
-    message: '付款成功，已售数量+1',
+    message: '付款成功，已售数量+1，库存-1',
     product: product
   })
 })
