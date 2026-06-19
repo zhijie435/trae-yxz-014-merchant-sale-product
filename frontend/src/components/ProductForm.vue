@@ -121,6 +121,20 @@
               class="input-field"
             />
           </div>
+
+          <div class="form-group">
+            <label>商品状态</label>
+            <select v-model="formData.status" class="input-field">
+              <template v-if="isHeadquartersAdmin">
+                <option value="online">上架中</option>
+                <option value="offline">已下架</option>
+              </template>
+              <template v-else>
+                <option value="pending">待审核</option>
+                <option value="offline">已下架</option>
+              </template>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -443,6 +457,10 @@ const props = defineProps({
   editProduct: {
     type: Object,
     default: null
+  },
+  isHeadquartersAdmin: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -460,6 +478,7 @@ const formData = reactive({
   minOrderQty: 1,
   stock: 0,
   soldQty: 0,
+  status: 'pending',
   images: [
     { url: '', file: null },
     { url: '', file: null },
@@ -617,6 +636,7 @@ const handleSave = () => {
     minOrderQty: formData.minOrderQty || 1,
     stock: formData.stock || 0,
     soldQty: formData.soldQty || 0,
+    status: formData.status,
     images: formData.images.filter(img => img.url).map(img => img.url),
     video: formData.video.url,
     deliveryType: formData.deliveryType,
@@ -644,6 +664,7 @@ onMounted(() => {
       minOrderQty: props.editProduct.minOrderQty || 1,
       stock: props.editProduct.stock || 0,
       soldQty: props.editProduct.soldQty || 0,
+      status: props.editProduct.status || 'pending',
       images: [
         ...props.editProduct.images?.map(url => ({ url, file: null })) || [],
         ...Array(6 - (props.editProduct.images?.length || 0)).fill({ url: '', file: null })

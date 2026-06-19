@@ -11,6 +11,7 @@
 
         <ProductForm
           v-else-if="currentPage === 'add'"
+          :is-headquarters-admin="isHeadquartersAdmin"
           @back="handleBack"
           @save="handleSaveProduct"
         />
@@ -18,6 +19,7 @@
         <ProductForm
           v-else-if="currentPage === 'edit'"
           :edit-product="selectedProduct"
+          :is-headquarters-admin="isHeadquartersAdmin"
           @back="handleBack"
           @save="handleUpdateProduct"
         />
@@ -27,13 +29,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import ProductListPage from './components/ProductListPage.vue'
 import ProductForm from './components/ProductForm.vue'
 import { createProduct, updateProduct } from './api/product'
 
 const currentPage = ref('list')
 const selectedProduct = ref(null)
+
+const currentUserRole = ref('admin')
+
+const isHeadquartersAdmin = computed(() => {
+  return currentUserRole.value === 'super_admin' || currentUserRole.value === 'headquarters_admin'
+})
 
 const handleAddProduct = () => {
   selectedProduct.value = null
@@ -52,6 +60,12 @@ const handleBack = () => {
 
 const handleSaveProduct = async (productData) => {
   try {
+    if (isHeadquartersAdmin.value && productData.status === 'online') {
+      productData.status = 'online'
+    } else {
+      productData.status = 'pending'
+    }
+    
     await createProduct(productData)
     alert('商品创建成功！')
     handleBack()
@@ -63,6 +77,12 @@ const handleSaveProduct = async (productData) => {
 
 const handleUpdateProduct = async (productData) => {
   try {
+    if (isHeadquartersAdmin.value && productData.status === 'online') {
+      productData.status = 'online'
+    } else if (productData.status === 'online') {
+      productData.status = 'pending'
+    }
+    
     await updateProduct(selectedProduct.value.id, productData)
     alert('商品更新成功！')
     handleBack()
