@@ -1,11 +1,24 @@
 <template>
   <div class="product-card">
     <div class="product-image">
-      <img :src="product.image" :alt="product.name" />
+      <img :src="primaryImage" :alt="product.name" />
       <span class="product-category">{{ product.category }}</span>
+      <div class="image-count" v-if="imageCount > 1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+        {{ imageCount }}
+      </div>
     </div>
 
     <div class="product-content">
+      <div class="product-brand" v-if="product.brand">
+        {{ product.brand }}
+        <span v-if="product.model" class="product-model">{{ product.model }}</span>
+      </div>
+
       <h3 class="product-name">{{ product.name }}</h3>
 
       <div class="product-price-row">
@@ -43,6 +56,8 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+
 const props = defineProps({
   product: {
     type: Object,
@@ -51,6 +66,17 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['edit'])
+
+const primaryImage = computed(() => {
+  if (props.product.images && props.product.images.length > 0) {
+    return props.product.images[0]
+  }
+  return 'https://via.placeholder.com/400x400?text=No+Image'
+})
+
+const imageCount = computed(() => {
+  return props.product.images?.length || 0
+})
 
 const handleEdit = () => {
   emit('edit', props.product)
@@ -105,8 +131,43 @@ const handleEdit = () => {
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
 }
 
+.image-count {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.image-count svg {
+  width: 14px;
+  height: 14px;
+}
+
 .product-content {
   padding: 16px;
+}
+
+.product-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #667eea;
+  margin-bottom: 8px;
+}
+
+.product-model {
+  font-weight: 400;
+  color: #8c8c8c;
 }
 
 .product-name {

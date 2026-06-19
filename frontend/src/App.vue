@@ -1,82 +1,95 @@
 <template>
   <div class="app">
     <div class="container">
-      <div class="header">
-        <h1 class="title">销售商品管理</h1>
-        <p class="subtitle">管理您的商品上下架和审核状态</p>
-      </div>
+      <Transition name="page" mode="out-in">
+        <ProductListPage
+          v-if="currentPage === 'list'"
+          @add-product="handleAddProduct"
+          @edit-product="handleEditProduct"
+          @refresh="loadProducts"
+        />
 
-      <ProductFilterBar @filter-change="handleFilterChange" />
+        <ProductForm
+          v-else-if="currentPage === 'add'"
+          @back="handleBack"
+          @save="handleSaveProduct"
+        />
 
-      <ProductList
-        :products="products"
-        :loading="loading"
-        @edit="handleEditProduct"
-      />
-
-      <EditProductModal
-        :visible="showEditModal"
-        :product="selectedProduct"
-        @close="handleCloseModal"
-        @save="handleSaveProduct"
-      />
+        <ProductForm
+          v-else-if="currentPage === 'edit'"
+          :edit-product="selectedProduct"
+          @back="handleBack"
+          @save="handleUpdateProduct"
+        />
+      </Transition>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import ProductFilterBar from './components/ProductFilterBar.vue'
-import ProductList from './components/ProductList.vue'
-import EditProductModal from './components/EditProductModal.vue'
-import { getProducts } from './api/product'
+import ProductListPage from './components/ProductListPage.vue'
+import ProductForm from './components/ProductForm.vue'
+import { createProduct, updateProduct } from './api/product'
 
-const products = ref([])
-const loading = ref(false)
-const currentFilter = ref('all')
-const showEditModal = ref(false)
+const currentPage = ref('list')
 const selectedProduct = ref(null)
 
-const handleFilterChange = async (filter) => {
-  currentFilter.value = filter
-  await loadProducts(filter)
-}
-
-const loadProducts = async (filter) => {
-  loading.value = true
-  try {
-    products.value = await getProducts(filter)
-  } catch (error) {
-    console.error('加载商品失败:', error)
-    products.value = []
-  } finally {
-    loading.value = false
-  }
+const handleAddProduct = () => {
+  selectedProduct.value = null
+  currentPage.value = 'add'
 }
 
 const handleEditProduct = (product) => {
   selectedProduct.value = product
-  showEditModal.value = true
+  currentPage.value = 'edit'
 }
 
-const handleCloseModal = () => {
-  showEditModal.value = false
+const handleBack = () => {
+  currentPage.value = 'list'
   selectedProduct.value = null
 }
 
-const handleSaveProduct = (updatedProduct) => {
-  console.log('保存商品:', updatedProduct)
-  handleCloseModal()
-  loadProducts(currentFilter.value)
+const handleSaveProduct = async (productData) => {
+  try {
+    await createProduct(productData)
+    alert('商品创建成功！')
+    handleBack()
+  } catch (error) {
+    console.error('创建商品失败:', error)
+    alert('创建商品失败，请重试')
+  }
 }
 
-onMounted(() => {
-  loadProducts('all')
-})
+const handleUpdateProduct = async (productData) => {
+  try {
+    await updateProduct(selectedProduct.value.id, productData)
+    alert('商品更新成功！')
+    handleBack()
+  } catch (error) {
+    console.error('更新商品失败:', error)
+    alert('更新商品失败，请重试')
+  }
+}
 </script>
 
 <style scoped>
 .app {
   width: 100%;
+}
+
+.page-enter-active,
+.page-leave-active {
+  transition: all 0.3s ease;
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateX(-20px);
 }
 </style>
