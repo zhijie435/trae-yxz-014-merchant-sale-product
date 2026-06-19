@@ -16,7 +16,92 @@
     <div class="form-container">
       <div class="form-section">
         <h2 class="section-title">
-          <span class="section-icon">📦</span>
+          <span class="section-icon">�</span>
+          价格设置
+          <span class="section-hint">（设置商品价格和折扣信息）</span>
+        </h2>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="required">销售价</label>
+            <div class="price-input-wrapper">
+              <span class="currency-symbol">¥</span>
+              <input
+                v-model.number="formData.price"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                class="input-field price-input"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>划线价</label>
+            <div class="price-input-wrapper">
+              <span class="currency-symbol">¥</span>
+              <input
+                v-model.number="formData.originalPrice"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                class="input-field price-input"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>折扣比例</label>
+            <div class="discount-display">
+              <div v-if="formData.originalPrice && formData.price" class="discount-badge">
+                {{ calculateDiscount }}折
+              </div>
+              <span v-else class="discount-placeholder">自动计算</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>库存预警值</label>
+            <input
+              v-model.number="formData.stockWarning"
+              type="number"
+              min="0"
+              placeholder="库存预警阈值"
+              class="input-field"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>是否包邮</label>
+            <div class="switch-wrapper">
+              <label class="switch">
+                <input
+                  type="checkbox"
+                  v-model="formData.freeShipping"
+                  class="switch-input"
+                />
+                <span class="slider"></span>
+              </label>
+              <span class="switch-label">{{ formData.freeShipping ? '包邮' : '不包邮' }}</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>库存扣减方式</label>
+            <select v-model="formData.stockDeductType" class="input-field">
+              <option value="instant">下单即扣减</option>
+              <option value="payment">付款后扣减</option>
+              <option value="manual">手动确认扣减</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2 class="section-title">
+          <span class="section-icon">�</span>
           基础信息
         </h2>
 
@@ -77,16 +162,6 @@
                 <option value="充电设备">充电设备</option>
               </select>
             </div>
-          </div>
-
-          <div class="form-group">
-            <label>规格选择配置</label>
-            <input
-              v-model="formData.specConfig"
-              type="text"
-              placeholder="如：颜色、尺寸"
-              class="input-field"
-            />
           </div>
 
           <div class="form-group">
@@ -338,6 +413,134 @@
         </div>
       </div>
 
+      <div class="form-section">
+        <h2 class="section-title">
+          <span class="section-icon">🏷️</span>
+          商品标签
+          <span class="section-hint">（为商品添加标签分类）</span>
+        </h2>
+
+        <div class="tags-section">
+          <div class="tags-container">
+            <div
+              v-for="tag in availableTags"
+              :key="tag.id"
+              class="tag-item"
+              :class="{ selected: formData.tags.includes(tag.id) }"
+              @click="toggleTag(tag.id)"
+            >
+              <span class="tag-icon">{{ tag.icon }}</span>
+              <span class="tag-name">{{ tag.name }}</span>
+              <span v-if="formData.tags.includes(tag.id)" class="tag-check">✓</span>
+            </div>
+          </div>
+
+          <div class="custom-tag-section">
+            <label>自定义标签</label>
+            <div class="custom-tag-input">
+              <input
+                v-model="newCustomTag"
+                type="text"
+                placeholder="输入自定义标签名称"
+                class="input-field"
+                @keyup.enter="addCustomTag"
+              />
+              <button class="add-tag-btn" @click="addCustomTag" :disabled="!newCustomTag.trim()">
+                添加
+              </button>
+            </div>
+            <div v-if="formData.customTags.length > 0" class="custom-tags-list">
+              <span
+                v-for="(tag, index) in formData.customTags"
+                :key="index"
+                class="custom-tag"
+              >
+                {{ tag }}
+                <button class="remove-tag" @click="removeCustomTag(index)">×</button>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section sku-section">
+        <h2 class="section-title">
+          <span class="section-icon">📋</span>
+          规格价格管理
+          <span class="section-hint">（管理商品SKU变体）</span>
+        </h2>
+
+        <div class="sku-manager">
+          <div class="sku-header">
+            <button class="add-sku-btn" @click="addSKU">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              添加SKU规格
+            </button>
+          </div>
+
+          <div v-if="formData.skus.length > 0" class="sku-table">
+            <div class="sku-table-header">
+              <div class="sku-cell sku-name">规格名称</div>
+              <div class="sku-cell sku-stock">库存</div>
+              <div class="sku-cell sku-price">价格</div>
+              <div class="sku-cell sku-actions">操作</div>
+            </div>
+
+            <div
+              v-for="(sku, index) in formData.skus"
+              :key="index"
+              class="sku-row"
+            >
+              <div class="sku-cell sku-name">
+                <input
+                  v-model="sku.name"
+                  type="text"
+                  placeholder="如：128GB黑色"
+                  class="input-field"
+                />
+              </div>
+              <div class="sku-cell sku-stock">
+                <input
+                  v-model.number="sku.stock"
+                  type="number"
+                  min="0"
+                  placeholder="库存"
+                  class="input-field"
+                />
+              </div>
+              <div class="sku-cell sku-price">
+                <div class="price-input-wrapper">
+                  <span class="currency-symbol">¥</span>
+                  <input
+                    v-model.number="sku.price"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="0.00"
+                    class="input-field price-input"
+                  />
+                </div>
+              </div>
+              <div class="sku-cell sku-actions">
+                <button class="sku-action-btn delete" @click="removeSKU(index)" title="删除">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3,6 5,6 21,6"/>
+                    <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6M8,6V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div v-else class="sku-empty">
+            <p>暂无SKU规格，点击上方按钮添加</p>
+          </div>
+        </div>
+      </div>
+
       <div class="form-section specs-details-section">
         <div class="specs-column">
           <h2 class="section-title">
@@ -438,6 +641,53 @@
         </div>
       </div>
 
+      <div v-if="isEdit && !isHeadquartersAdmin" class="form-section audit-section">
+        <h2 class="section-title">
+          <span class="section-icon">🔍</span>
+          审核信息
+          <span class="section-hint">（查看审核状态和历史）</span>
+        </h2>
+
+        <div class="audit-info">
+          <div class="audit-status-card">
+            <div class="audit-status">
+              <span class="status-label">当前状态：</span>
+              <span class="status-value" :class="getStatusClass(formData.auditStatus)">
+                {{ getStatusText(formData.auditStatus) }}
+              </span>
+            </div>
+
+            <div class="audit-history">
+              <h4>审核历史</h4>
+              <div class="history-list">
+                <div
+                  v-for="(history, index) in formData.auditHistory"
+                  :key="index"
+                  class="history-item"
+                >
+                  <div class="history-time">{{ history.time }}</div>
+                  <div class="history-content">
+                    <span class="history-action">{{ history.action }}</span>
+                    <span class="history-operator">{{ history.operator }}</span>
+                    <p v-if="history.comment" class="history-comment">{{ history.comment }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="audit-apply">
+            <label>提交审核说明</label>
+            <textarea
+              v-model="formData.auditComment"
+              placeholder="填写提交审核的说明或备注..."
+              class="input-field textarea"
+              rows="4"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
       <div class="form-actions">
         <button class="btn btn-cancel" @click="handleBack">
           取消
@@ -451,7 +701,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 
 const props = defineProps({
   editProduct: {
@@ -468,17 +718,36 @@ const emit = defineEmits(['back', 'save'])
 
 const isEdit = ref(false)
 const imageInputRefs = ref([])
+const newCustomTag = ref('')
+
+const availableTags = ref([
+  { id: 'hot', name: '热销', icon: '🔥' },
+  { id: 'new', name: '新品', icon: '✨' },
+  { id: 'recommend', name: '推荐', icon: '⭐' },
+  { id: 'discount', name: '折扣', icon: '🎉' },
+  { id: 'limited', name: '限量', icon: '⏰' },
+  { id: 'presell', name: '预售', icon: '📦' },
+  { id: 'flash', name: '秒杀', icon: '⚡' },
+  { id: 'gift', name: '赠品', icon: '🎁' }
+])
 
 const formData = reactive({
   name: '',
   brand: '',
   model: '',
   category: '',
-  specConfig: '',
+  price: 0,
+  originalPrice: 0,
+  freeShipping: false,
+  stockWarning: 10,
+  stockDeductType: 'payment',
   minOrderQty: 1,
   stock: 0,
   soldQty: 0,
   status: 'pending',
+  auditStatus: 'pending',
+  auditComment: '',
+  auditHistory: [],
   images: [
     { url: '', file: null },
     { url: '', file: null },
@@ -497,12 +766,23 @@ const formData = reactive({
   deliveryAddress: '',
   contactPerson: '',
   deliveryNote: '',
+  tags: [],
+  customTags: [],
+  skus: [],
   specs: [
     { label: '', value: '' }
   ],
   details: [
     { text: '' }
   ]
+})
+
+const calculateDiscount = computed(() => {
+  if (formData.originalPrice && formData.price) {
+    const discount = (formData.price / formData.originalPrice * 10).toFixed(1)
+    return discount
+  }
+  return '0'
 })
 
 const setImageInputRef = (el, index) => {
@@ -582,6 +862,38 @@ const removeVideo = () => {
   formData.video = { url: '', file: null }
 }
 
+const toggleTag = (tagId) => {
+  const index = formData.tags.indexOf(tagId)
+  if (index > -1) {
+    formData.tags.splice(index, 1)
+  } else {
+    formData.tags.push(tagId)
+  }
+}
+
+const addCustomTag = () => {
+  if (newCustomTag.value.trim()) {
+    formData.customTags.push(newCustomTag.value.trim())
+    newCustomTag.value = ''
+  }
+}
+
+const removeCustomTag = (index) => {
+  formData.customTags.splice(index, 1)
+}
+
+const addSKU = () => {
+  formData.skus.push({
+    name: '',
+    stock: 0,
+    price: 0
+  })
+}
+
+const removeSKU = (index) => {
+  formData.skus.splice(index, 1)
+}
+
 const addSpec = () => {
   formData.specs.push({ label: '', value: '' })
 }
@@ -602,6 +914,24 @@ const removeDetail = (index) => {
   }
 }
 
+const getStatusClass = (status) => {
+  const classMap = {
+    pending: 'status-pending',
+    approved: 'status-approved',
+    rejected: 'status-rejected'
+  }
+  return classMap[status] || ''
+}
+
+const getStatusText = (status) => {
+  const textMap = {
+    pending: '待审核',
+    approved: '已通过',
+    rejected: '已拒绝'
+  }
+  return textMap[status] || '未知状态'
+}
+
 const validateForm = () => {
   if (!formData.name.trim()) {
     alert('请输入商品名称')
@@ -613,6 +943,10 @@ const validateForm = () => {
   }
   if (!formData.category) {
     alert('请选择产品分类')
+    return false
+  }
+  if (formData.price <= 0) {
+    alert('请输入有效的销售价格')
     return false
   }
   return true
@@ -632,11 +966,18 @@ const handleSave = () => {
     brand: formData.brand,
     model: formData.model,
     category: formData.category,
-    specConfig: formData.specConfig,
+    price: formData.price,
+    originalPrice: formData.originalPrice,
+    freeShipping: formData.freeShipping,
+    stockWarning: formData.stockWarning,
+    stockDeductType: formData.stockDeductType,
     minOrderQty: formData.minOrderQty || 1,
     stock: formData.stock || 0,
     soldQty: formData.soldQty || 0,
     status: formData.status,
+    auditStatus: formData.auditStatus,
+    auditComment: formData.auditComment,
+    auditHistory: formData.auditHistory,
     images: formData.images.filter(img => img.url).map(img => img.url),
     video: formData.video.url,
     deliveryType: formData.deliveryType,
@@ -645,6 +986,9 @@ const handleSave = () => {
     deliveryAddress: formData.deliveryType === 'onsite' ? formData.deliveryAddress : '',
     contactPerson: formData.deliveryType === 'onsite' ? formData.contactPerson : '',
     deliveryNote: formData.deliveryType === 'onsite' ? formData.deliveryNote : '',
+    tags: formData.tags,
+    customTags: formData.customTags,
+    skus: formData.skus.filter(sku => sku.name.trim()),
     specs: formData.specs.filter(spec => spec.label.trim() && spec.value.trim()),
     details: formData.details.filter(detail => detail.text.trim())
   }
@@ -660,11 +1004,18 @@ onMounted(() => {
       brand: props.editProduct.brand || '',
       model: props.editProduct.model || '',
       category: props.editProduct.category || '',
-      specConfig: props.editProduct.specConfig || '',
+      price: props.editProduct.price || 0,
+      originalPrice: props.editProduct.originalPrice || 0,
+      freeShipping: props.editProduct.freeShipping || false,
+      stockWarning: props.editProduct.stockWarning || 10,
+      stockDeductType: props.editProduct.stockDeductType || 'payment',
       minOrderQty: props.editProduct.minOrderQty || 1,
       stock: props.editProduct.stock || 0,
       soldQty: props.editProduct.soldQty || 0,
       status: props.editProduct.status || 'pending',
+      auditStatus: props.editProduct.auditStatus || 'pending',
+      auditComment: props.editProduct.auditComment || '',
+      auditHistory: props.editProduct.auditHistory || [],
       images: [
         ...props.editProduct.images?.map(url => ({ url, file: null })) || [],
         ...Array(6 - (props.editProduct.images?.length || 0)).fill({ url: '', file: null })
@@ -679,11 +1030,16 @@ onMounted(() => {
       deliveryAddress: props.editProduct.deliveryAddress || '',
       contactPerson: props.editProduct.contactPerson || '',
       deliveryNote: props.editProduct.deliveryNote || '',
-      specs: props.editProduct.specs?.length > 0 
-        ? props.editProduct.specs.map(spec => ({ ...spec })) 
+      tags: props.editProduct.tags || [],
+      customTags: props.editProduct.customTags || [],
+      skus: props.editProduct.skus?.length > 0
+        ? props.editProduct.skus.map(sku => ({ ...sku }))
+        : [],
+      specs: props.editProduct.specs?.length > 0
+        ? props.editProduct.specs.map(spec => ({ ...spec }))
         : [{ label: '', value: '' }],
-      details: props.editProduct.details?.length > 0 
-        ? props.editProduct.details.map(detail => ({ ...detail })) 
+      details: props.editProduct.details?.length > 0
+        ? props.editProduct.details.map(detail => ({ ...detail }))
         : [{ text: '' }]
     })
   }
@@ -1140,6 +1496,522 @@ onMounted(() => {
 .form-group input[type="number"]::-webkit-outer-spin-button {
   opacity: 1;
   height: 36px;
+}
+
+.price-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.currency-symbol {
+  position: absolute;
+  left: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #8c8c8c;
+}
+
+.price-input {
+  padding-left: 36px !important;
+}
+
+.discount-display {
+  display: flex;
+  align-items: center;
+  height: 52px;
+}
+
+.discount-badge {
+  background: linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.discount-placeholder {
+  font-size: 14px;
+  color: #8c8c8c;
+}
+
+.switch-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 52px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+}
+
+.switch-input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #e8e8e8;
+  transition: 0.3s;
+  border-radius: 28px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.switch-input:checked + .slider {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.switch-input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+.switch-label {
+  font-size: 14px;
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+.tags-section {
+  background: #fafafa;
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid #e8e8e8;
+}
+
+.tags-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.tag-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: white;
+  border: 2px solid #e8e8e8;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.tag-item:hover {
+  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+}
+
+.tag-item.selected {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  color: white;
+}
+
+.tag-icon {
+  font-size: 18px;
+}
+
+.tag-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.tag-check {
+  margin-left: auto;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.custom-tag-section {
+  padding-top: 24px;
+  border-top: 2px solid #e8e8e8;
+}
+
+.custom-tag-section label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 12px;
+}
+
+.custom-tag-input {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.custom-tag-input .input-field {
+  flex: 1;
+}
+
+.add-tag-btn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.add-tag-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.add-tag-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.custom-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.custom-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #f0f4ff;
+  border: 1px solid #667eea;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #667eea;
+  font-weight: 600;
+}
+
+.remove-tag {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #667eea;
+  cursor: pointer;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+
+.remove-tag:hover {
+  background: #667eea;
+  color: white;
+}
+
+.sku-section {
+  background: linear-gradient(135deg, #f0f4ff 0%, #fafafa 100%);
+  border: 2px solid #e8e8e8;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.sku-manager {
+  margin-top: 20px;
+}
+
+.sku-header {
+  margin-bottom: 20px;
+}
+
+.add-sku-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.add-sku-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.add-sku-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.sku-table {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e8e8e8;
+}
+
+.sku-table-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 80px;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #fafafa;
+  font-weight: 700;
+  font-size: 14px;
+  color: #1a1a1a;
+  border-bottom: 2px solid #e8e8e8;
+}
+
+.sku-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 80px;
+  gap: 16px;
+  padding: 16px 20px;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.3s;
+}
+
+.sku-row:last-child {
+  border-bottom: none;
+}
+
+.sku-row:hover {
+  background: #fafafa;
+}
+
+.sku-cell .input-field {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid #e8e8e8;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.3s;
+  background: white;
+}
+
+.sku-cell .input-field:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.sku-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.sku-action-btn {
+  width: 36px;
+  height: 36px;
+  border: 2px solid #e8e8e8;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.sku-action-btn.delete {
+  color: #ff4d4f;
+}
+
+.sku-action-btn.delete:hover {
+  background: #fff1f0;
+  border-color: #ff4d4f;
+}
+
+.sku-action-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.sku-empty {
+  padding: 60px 20px;
+  text-align: center;
+  background: white;
+  border-radius: 10px;
+  border: 2px dashed #d9d9d9;
+}
+
+.sku-empty p {
+  font-size: 14px;
+  color: #8c8c8c;
+}
+
+.audit-section {
+  background: linear-gradient(135deg, #fff7e6 0%, #fafafa 100%);
+  border: 2px solid #ffe58f;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.audit-info {
+  margin-top: 20px;
+}
+
+.audit-status-card {
+  background: white;
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 24px;
+  border: 1px solid #ffe58f;
+}
+
+.audit-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.status-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.status-value {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.status-pending {
+  background: #fff7e6;
+  color: #fa8c16;
+}
+
+.status-approved {
+  background: #f6ffed;
+  color: #52c41a;
+}
+
+.status-rejected {
+  background: #fff1f0;
+  color: #ff4d4f;
+}
+
+.audit-history h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 16px;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.history-item {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+}
+
+.history-time {
+  font-size: 13px;
+  color: #8c8c8c;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.history-content {
+  flex: 1;
+}
+
+.history-action {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-right: 12px;
+}
+
+.history-operator {
+  font-size: 13px;
+  color: #8c8c8c;
+}
+
+.history-comment {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #595959;
+  line-height: 1.5;
+}
+
+.audit-apply {
+  background: white;
+  border-radius: 10px;
+  padding: 24px;
+  border: 1px solid #ffe58f;
+}
+
+.audit-apply label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 12px;
+}
+
+.audit-apply .textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e8e8e8;
+  border-radius: 10px;
+  font-size: 15px;
+  transition: all 0.3s;
+  background: white;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.audit-apply .textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .delivery-options {
