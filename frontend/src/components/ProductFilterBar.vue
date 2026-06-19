@@ -1,15 +1,28 @@
 <template>
   <div class="filter-bar">
-    <div class="filter-tabs">
-      <button
-        v-for="tab in tabs"
-        :key="tab.key"
-        :class="['filter-tab', { active: activeTab === tab.key }]"
-        @click="handleTabClick(tab.key)"
-      >
-        <span class="tab-label">{{ tab.label }}</span>
-        <span class="tab-count" v-if="showCount">{{ getCount(tab.key) }}</span>
-      </button>
+    <div class="filter-content">
+      <div class="filter-tabs">
+        <button
+          v-for="tab in tabs"
+          :key="tab.key"
+          :class="['filter-tab', { active: activeTab === tab.key }]"
+          @click="handleTabClick(tab.key)"
+        >
+          <span class="tab-label">{{ tab.label }}</span>
+          <span class="tab-count" v-if="showCount">{{ getCount(tab.key) }}</span>
+        </button>
+      </div>
+      <div class="batch-actions">
+        <button class="batch-btn" @click="handleBatchOperation">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+          </svg>
+          批量操作
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -50,6 +63,11 @@ const handleTabClick = (key) => {
   emit('filter-change', key)
 }
 
+const handleBatchOperation = () => {
+  alert('批量操作功能开发中...')
+  console.log('批量操作按钮被点击')
+}
+
 onMounted(async () => {
   try {
     const data = await getProductStats()
@@ -69,10 +87,54 @@ onMounted(async () => {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+.filter-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.batch-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.batch-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  border: 2px solid #667eea;
+  background: white;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #667eea;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.batch-btn:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.batch-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
 .filter-tabs {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
 }
 
 .filter-tab {
@@ -153,6 +215,21 @@ onMounted(async () => {
 }
 
 @media (max-width: 768px) {
+  .filter-content {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .batch-actions {
+    width: 100%;
+    order: -1;
+  }
+
+  .batch-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
   .filter-tabs {
     gap: 8px;
   }
