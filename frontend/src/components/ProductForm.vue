@@ -170,6 +170,106 @@
         </div>
       </div>
 
+      <div class="form-section specs-details-section">
+        <div class="specs-column">
+          <h2 class="section-title">
+            <span class="section-icon">📋</span>
+            规格参数
+            <span class="section-hint">（模块化编辑，每行一个参数）</span>
+          </h2>
+
+          <div class="module-list">
+            <div
+              v-for="(spec, index) in formData.specs"
+              :key="index"
+              class="module-item"
+            >
+              <div class="module-row">
+                <div class="module-field">
+                  <input
+                    v-model="spec.label"
+                    type="text"
+                    placeholder="参数名称（如：重量）"
+                    class="input-field"
+                  />
+                </div>
+                <div class="module-field">
+                  <input
+                    v-model="spec.value"
+                    type="text"
+                    placeholder="参数值（如：200g）"
+                    class="input-field"
+                  />
+                </div>
+                <button
+                  class="module-remove-btn"
+                  @click="removeSpec(index)"
+                  :disabled="formData.specs.length <= 1"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3,6 5,6 21,6"/>
+                    <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6M8,6V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <button class="add-module-btn" @click="addSpec">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            添加规格参数
+          </button>
+        </div>
+
+        <div class="details-column">
+          <h2 class="section-title">
+            <span class="section-icon">📝</span>
+            商品详情
+            <span class="section-hint">（模块化编辑，每行一个详情）</span>
+          </h2>
+
+          <div class="module-list">
+            <div
+              v-for="(detail, index) in formData.details"
+              :key="index"
+              class="module-item"
+            >
+              <div class="module-row">
+                <div class="module-field full">
+                  <textarea
+                    v-model="detail.text"
+                    placeholder="请输入商品详情描述..."
+                    class="input-field textarea"
+                    rows="3"
+                  ></textarea>
+                </div>
+                <button
+                  class="module-remove-btn"
+                  @click="removeDetail(index)"
+                  :disabled="formData.details.length <= 1"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3,6 5,6 21,6"/>
+                    <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6M8,6V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <button class="add-module-btn" @click="addDetail">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            添加商品详情
+          </button>
+        </div>
+      </div>
+
       <div class="form-actions">
         <button class="btn btn-cancel" @click="handleBack">
           取消
@@ -213,7 +313,13 @@ const formData = reactive({
   video: {
     url: '',
     file: null
-  }
+  },
+  specs: [
+    { label: '', value: '' }
+  ],
+  details: [
+    { text: '' }
+  ]
 })
 
 const setImageInputRef = (el, index) => {
@@ -293,6 +399,26 @@ const removeVideo = () => {
   formData.video = { url: '', file: null }
 }
 
+const addSpec = () => {
+  formData.specs.push({ label: '', value: '' })
+}
+
+const removeSpec = (index) => {
+  if (formData.specs.length > 1) {
+    formData.specs.splice(index, 1)
+  }
+}
+
+const addDetail = () => {
+  formData.details.push({ text: '' })
+}
+
+const removeDetail = (index) => {
+  if (formData.details.length > 1) {
+    formData.details.splice(index, 1)
+  }
+}
+
 const validateForm = () => {
   if (!formData.name.trim()) {
     alert('请输入商品名称')
@@ -324,7 +450,9 @@ const handleSave = () => {
     model: formData.model,
     category: formData.category,
     images: formData.images.filter(img => img.url).map(img => img.url),
-    video: formData.video.url
+    video: formData.video.url,
+    specs: formData.specs.filter(spec => spec.label.trim() && spec.value.trim()),
+    details: formData.details.filter(detail => detail.text.trim())
   }
 
   emit('save', productData)
@@ -345,7 +473,13 @@ onMounted(() => {
       video: {
         url: props.editProduct.video || '',
         file: null
-      }
+      },
+      specs: props.editProduct.specs?.length > 0 
+        ? props.editProduct.specs.map(spec => ({ ...spec })) 
+        : [{ label: '', value: '' }],
+      details: props.editProduct.details?.length > 0 
+        ? props.editProduct.details.map(detail => ({ ...detail })) 
+        : [{ text: '' }]
     })
   }
 })
@@ -643,6 +777,136 @@ onMounted(() => {
   font-size: 14px;
 }
 
+.specs-details-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  border-bottom: none;
+  margin-bottom: 32px;
+  padding-bottom: 0;
+}
+
+.specs-column,
+.details-column {
+  background: #fafafa;
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid #e8e8e8;
+}
+
+.module-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.module-item {
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid #e8e8e8;
+  transition: all 0.3s;
+}
+
+.module-item:hover {
+  border-color: #667eea;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+}
+
+.module-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.module-field {
+  flex: 1;
+}
+
+.module-field.full {
+  flex: 1;
+}
+
+.module-field .input-field {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid #e8e8e8;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.3s;
+  background: white;
+}
+
+.module-field .input-field:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.module-field .textarea {
+  resize: vertical;
+  min-height: 60px;
+  line-height: 1.5;
+}
+
+.module-remove-btn {
+  width: 36px;
+  height: 36px;
+  border: 2px solid #e8e8e8;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+
+.module-remove-btn:hover:not(:disabled) {
+  background: #fff1f0;
+  border-color: #ff4d4f;
+  color: #ff4d4f;
+}
+
+.module-remove-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.module-remove-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.add-module-btn {
+  width: 100%;
+  padding: 12px;
+  border: 2px dashed #d9d9d9;
+  background: white;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #667eea;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s;
+}
+
+.add-module-btn:hover {
+  border-color: #667eea;
+  background: #f0f4ff;
+}
+
+.add-module-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
 .video-preview {
   position: relative;
   border-radius: 12px;
@@ -773,6 +1037,25 @@ onMounted(() => {
 
   .page-header {
     padding: 20px;
+  }
+
+  .specs-details-section {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .specs-column,
+  .details-column {
+    padding: 16px;
+  }
+
+  .module-row {
+    flex-direction: column;
+  }
+
+  .module-remove-btn {
+    width: 100%;
+    height: 40px;
   }
 }
 </style>
