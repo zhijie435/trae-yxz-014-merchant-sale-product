@@ -78,6 +78,49 @@
               </select>
             </div>
           </div>
+
+          <div class="form-group">
+            <label>规格选择配置</label>
+            <input
+              v-model="formData.specConfig"
+              type="text"
+              placeholder="如：颜色、尺寸"
+              class="input-field"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>起售台数</label>
+            <input
+              v-model.number="formData.minOrderQty"
+              type="number"
+              min="1"
+              placeholder="最低起购数量"
+              class="input-field"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>库存</label>
+            <input
+              v-model.number="formData.stock"
+              type="number"
+              min="0"
+              placeholder="商品库存数量"
+              class="input-field"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>已售数量</label>
+            <input
+              v-model.number="formData.soldQty"
+              type="number"
+              min="0"
+              placeholder="已售出数量"
+              class="input-field"
+            />
+          </div>
         </div>
       </div>
 
@@ -302,6 +345,10 @@ const formData = reactive({
   brand: '',
   model: '',
   category: '',
+  specConfig: '',
+  minOrderQty: 1,
+  stock: 0,
+  soldQty: 0,
   images: [
     { url: '', file: null },
     { url: '', file: null },
@@ -449,6 +496,10 @@ const handleSave = () => {
     brand: formData.brand,
     model: formData.model,
     category: formData.category,
+    specConfig: formData.specConfig,
+    minOrderQty: formData.minOrderQty || 1,
+    stock: formData.stock || 0,
+    soldQty: formData.soldQty || 0,
     images: formData.images.filter(img => img.url).map(img => img.url),
     video: formData.video.url,
     specs: formData.specs.filter(spec => spec.label.trim() && spec.value.trim()),
@@ -466,6 +517,10 @@ onMounted(() => {
       brand: props.editProduct.brand || '',
       model: props.editProduct.model || '',
       category: props.editProduct.category || '',
+      specConfig: props.editProduct.specConfig || '',
+      minOrderQty: props.editProduct.minOrderQty || 1,
+      stock: props.editProduct.stock || 0,
+      soldQty: props.editProduct.soldQty || 0,
       images: [
         ...props.editProduct.images?.map(url => ({ url, file: null })) || [],
         ...Array(6 - (props.editProduct.images?.length || 0)).fill({ url: '', file: null })
@@ -905,6 +960,36 @@ onMounted(() => {
 .add-module-btn svg {
   width: 18px;
   height: 18px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.form-group input[type="number"] {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e8e8e8;
+  border-radius: 10px;
+  font-size: 15px;
+  transition: all 0.3s;
+  background: white;
+}
+
+.form-group input[type="number"]:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group input[type="number"]::-webkit-inner-spin-button,
+.form-group input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+  height: 36px;
 }
 
 .video-preview {

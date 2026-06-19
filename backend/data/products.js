@@ -14,7 +14,18 @@ export default [
     ],
     video: '',
     freeShipping: true,
-    stock: 156
+    stock: 156,
+    soldQty: 234,
+    specConfig: '颜色,存储容量',
+    minOrderQty: 1,
+    specs: [
+      { label: '颜色', value: '钛金属灰/钛金属蓝/钛金属白/钛金属黑' },
+      { label: '存储容量', value: '256GB/512GB/1TB' }
+    ],
+    details: [
+      { text: '全新钛金属设计，坚固又轻盈' },
+      { text: 'A17 Pro芯片，性能大幅提升' }
+    ]
   },
   {
     id: 2,
@@ -30,7 +41,19 @@ export default [
     ],
     video: '',
     freeShipping: true,
-    stock: 42
+    stock: 42,
+    soldQty: 89,
+    specConfig: '芯片配置,存储容量',
+    minOrderQty: 1,
+    specs: [
+      { label: '芯片', value: 'M3 Pro/M3 Max' },
+      { label: '内存', value: '18GB/36GB' },
+      { label: '存储', value: '512GB/1TB/2TB' }
+    ],
+    details: [
+      { text: 'M3 Pro芯片，专业级性能' },
+      { text: 'Liquid视网膜XDR显示屏' }
+    ]
   },
   {
     id: 3,
@@ -46,7 +69,17 @@ export default [
     ],
     video: '',
     freeShipping: true,
-    stock: 89
+    stock: 89,
+    soldQty: 456,
+    specConfig: '充电盒',
+    minOrderQty: 1,
+    specs: [
+      { label: '充电盒', value: 'USB-C MagSafe充电盒' }
+    ],
+    details: [
+      { text: '自适应音频，智能降噪' },
+      { text: '个性化空间音频' }
+    ]
   },
   {
     id: 4,
@@ -61,7 +94,18 @@ export default [
     ],
     video: '',
     freeShipping: false,
-    stock: 23
+    stock: 23,
+    soldQty: 67,
+    specConfig: '连接方式,存储容量',
+    minOrderQty: 1,
+    specs: [
+      { label: '连接', value: 'Wi-Fi/Wi-Fi+蜂窝' },
+      { label: '存储', value: '128GB/256GB/512GB/1TB/2TB' }
+    ],
+    details: [
+      { text: 'M2芯片，性能强劲' },
+      { text: '12.9英寸Liquid视网膜XDR屏' }
+    ]
   },
   {
     id: 5,
@@ -76,7 +120,17 @@ export default [
     ],
     video: '',
     freeShipping: true,
-    stock: 0
+    stock: 0,
+    soldQty: 123,
+    specConfig: '表带',
+    minOrderQty: 1,
+    specs: [
+      { label: '表带', value: '高山回环式/野径回环式/海洋表带' }
+    ],
+    details: [
+      { text: '49mm钛金属表壳' },
+      { text: '双频GPS定位精准' }
+    ]
   },
   {
     id: 6,
@@ -91,7 +145,16 @@ export default [
     ],
     video: '',
     freeShipping: false,
-    stock: 8
+    stock: 8,
+    soldQty: 234,
+    specConfig: '版本',
+    minOrderQty: 1,
+    specs: [
+      { label: '版本', value: '不带触控板/带触控板' }
+    ],
+    details: [
+      { text: '背光按键，稳定有线连接' }
+    ]
   },
   {
     id: 7,
@@ -106,7 +169,16 @@ export default [
     ],
     video: '',
     freeShipping: true,
-    stock: 234
+    stock: 234,
+    soldQty: 567,
+    specConfig: '',
+    minOrderQty: 1,
+    specs: [
+      { label: '功率', value: '15W' }
+    ],
+    details: [
+      { text: '磁吸对齐，快速充电' }
+    ]
   },
   {
     id: 8,
@@ -121,7 +193,18 @@ export default [
     ],
     video: '',
     freeShipping: true,
-    stock: 67
+    stock: 67,
+    soldQty: 1234,
+    specConfig: '颜色,存储容量',
+    minOrderQty: 1,
+    specs: [
+      { label: '颜色', value: '星光色/午夜色/蓝色/紫色/红色' },
+      { label: '存储', value: '128GB/256GB/512GB' }
+    ],
+    details: [
+      { text: 'A15仿生芯片' },
+      { text: '6.1英寸超视网膜XDR显示屏' }
+    ]
   },
   {
     id: 9,
@@ -137,7 +220,17 @@ export default [
     ],
     video: '',
     freeShipping: true,
-    stock: 112
+    stock: 112,
+    soldQty: 345,
+    specConfig: '颜色',
+    minOrderQty: 1,
+    specs: [
+      { label: '颜色', value: '银色/黑色' }
+    ],
+    details: [
+      { text: '业界领先降噪技术' },
+      { text: '30小时超长续航' }
+    ]
   },
   {
     id: 10,
@@ -152,7 +245,18 @@ export default [
     ],
     video: '',
     freeShipping: true,
-    stock: 78
+    stock: 78,
+    soldQty: 456,
+    specConfig: '颜色,存储容量',
+    minOrderQty: 1,
+    specs: [
+      { label: '颜色', value: '钛灰/钛黑/钛紫/钛黄' },
+      { label: '存储', value: '256GB/512GB/1TB' }
+    ],
+    details: [
+      { text: 'Galaxy AI智能助手' },
+      { text: '2亿像素摄像头' }
+    ]
   },
   {
     id: 11,
@@ -167,7 +271,18 @@ export default [
     ],
     video: '',
     freeShipping: false,
-    stock: 45
+    stock: 45,
+    soldQty: 789,
+    specConfig: '颜色,版本',
+    minOrderQty: 1,
+    specs: [
+      { label: '颜色', value: '白色/电光红·蓝' },
+      { label: '版本', value: '标准版/OLED版' }
+    ],
+    details: [
+      { text: '7英寸OLED屏幕' },
+      { text: '有线 LAN 接口' }
+    ]
   },
   {
     id: 12,
@@ -182,6 +297,17 @@ export default [
     ],
     video: '',
     freeShipping: true,
-    stock: 189
+    stock: 189,
+    soldQty: 890,
+    specConfig: '颜色,表带',
+    minOrderQty: 1,
+    specs: [
+      { label: '颜色', value: '夜跃黑/不锈钢原色' },
+      { label: '表带', value: 'TPU腕带/真皮腕带' }
+    ],
+    details: [
+      { text: '1.74寸AMOLED高清屏' },
+      { text: '14天超长续航' }
+    ]
   }
 ]

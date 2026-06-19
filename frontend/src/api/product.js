@@ -97,3 +97,23 @@ export const deleteProduct = async (id) => {
     throw error
   }
 }
+
+export const processPaymentSuccess = async (productId) => {
+  try {
+    const response = await fetch(`${API_BASE}/products/${productId}/payment-success`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error('处理付款成功失败')
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error('API Error:', error)
+    throw error
+  }
+}

@@ -55,7 +55,12 @@ router.post('/', (req, res) => {
     images: req.body.images || [],
     video: req.body.video || '',
     freeShipping: req.body.freeShipping || false,
-    stock: req.body.stock || 0
+    stock: req.body.stock || 0,
+    soldQty: req.body.soldQty || 0,
+    specConfig: req.body.specConfig || '',
+    minOrderQty: req.body.minOrderQty || 1,
+    specs: req.body.specs || [],
+    details: req.body.details || []
   }
 
   products.push(newProduct)
@@ -87,6 +92,26 @@ router.delete('/:id', (req, res) => {
 
   products.splice(index, 1)
   res.status(204).send()
+})
+
+router.post('/:id/payment-success', (req, res) => {
+  const product = products.find(p => p.id === parseInt(req.params.id))
+
+  if (!product) {
+    return res.status(404).json({ error: '商品不存在' })
+  }
+
+  product.soldQty = (product.soldQty || 0) + 1
+
+  if (product.stock > 0) {
+    product.stock = product.stock - 1
+  }
+
+  res.json({
+    success: true,
+    message: '付款成功，已售数量+1',
+    product: product
+  })
 })
 
 export default router
